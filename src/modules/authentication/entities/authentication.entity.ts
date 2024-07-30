@@ -1,9 +1,9 @@
 import { Session } from "src/modules/sessions/entities/session.entity";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, BaseEntity } from "typeorm";
 
 @Entity()
-export class Authentication {
+export class Authentication extends BaseEntity {
 
     @PrimaryGeneratedColumn({ type: 'bigint' })
     id: number;
@@ -26,6 +26,5 @@ export class Authentication {
 
     @UpdateDateColumn({ type: 'timestamptz' })
     updated_at: Date;
-
 
 }

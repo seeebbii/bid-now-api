@@ -1,14 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AuthenticationRepository } from './repository/authentication.repository';
+import { Authentication } from './entities/authentication.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthenticationService {
+
+  constructor(
+    private authenticationRepository: AuthenticationRepository,
+  ) { }
+
   create(createAuthenticationDto: CreateAuthenticationDto) {
     return 'This action adds a new authentication';
   }
 
-  findAll() {
+  async findAll() {
     return `This action returns all authentication`;
   }
 

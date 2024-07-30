@@ -1,11 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Session } from './entities/session.entity';
+import { Authentication } from './../authentication/entities/authentication.entity';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
+import { SwaggerTags } from 'src/common/constants/swagger-tags.constant';
+import { ControllerTagsConstant } from 'src/common/constants/controller-tags.constant';
+import { ApiTags } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 
-@Controller('sessions')
+@ApiTags(SwaggerTags.SESSION)
+@Controller({
+  version: '1',
+  path: ControllerTagsConstant.SESSIONS
+})
 export class SessionsController {
-  constructor(private readonly sessionsService: SessionsService) {}
+  private readonly logger = new Logger(SessionsController.name);;
+
+  constructor(private readonly sessionsService: SessionsService, private readonly configService: ConfigService) { }
 
   @Post()
   create(@Body() createSessionDto: CreateSessionDto) {

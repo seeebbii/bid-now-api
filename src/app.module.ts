@@ -7,20 +7,14 @@ import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development', '.env.production'],
     }),
-
     DatabaseModule,
-
     AuthenticationModule,
-
     SessionsModule,
-
     UserModule
-
   ],
   controllers: [],
   providers: [],

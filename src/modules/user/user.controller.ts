@@ -1,19 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { SwaggerTags } from 'src/common/constants/swagger-tags.constant';
+import { version } from 'os';
+import { ControllerTagsConstant } from 'src/common/constants/controller-tags.constant';
+import { ConfigService } from '@nestjs/config';
 
-@Controller('user')
+@ApiTags(SwaggerTags.USERS)
+@Controller({
+  version: '1',
+  path: ControllerTagsConstant.USERS
+})
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  private readonly logger = new Logger(UserController.name);;
+
+  constructor(private readonly userService: UserService, private readonly ConfigService: ConfigService) {
+
+  }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
+  @Get('/')
   findAll() {
+
     return this.userService.findAll();
   }
 

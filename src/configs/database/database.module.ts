@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigService, ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 
 // ! Database configuration module
 @Module({
@@ -15,7 +15,7 @@ import { ConfigService, ConfigModule } from '@nestjs/config';
                 password: configService.get('DATABASE_PASSWORD'),
                 database: configService.get('DATABASE_NAME'),
                 entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
-                synchronize: true,
+                synchronize: configService.getOrThrow<boolean>('DATABASE_SYNC'),
             }),
         }),
     ],

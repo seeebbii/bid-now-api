@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
+import { SwaggerTags } from 'src/common/constants/swagger-tags.constant';
+import { ControllerTagsConstant } from 'src/common/constants/controller-tags.constant';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('authentication')
+@ApiTags(SwaggerTags.AUTH)
+@Controller({
+  version: '1',
+  path: ControllerTagsConstant.AUTHENTICATION
+})
 export class AuthenticationController {
-  constructor(private readonly authenticationService: AuthenticationService) {}
+  private readonly logger = new Logger(AuthenticationController.name);;
+
+  constructor(private readonly authenticationService: AuthenticationService, private readonly configService: ConfigService) { }
 
   @Post()
   create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
