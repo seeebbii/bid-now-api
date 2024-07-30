@@ -18,8 +18,13 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService, private readonly configService: ConfigService) { }
 
   @Post()
-  create(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.create(createAuthenticationDto);
+  register(@Body() createAuthenticationDto: CreateAuthenticationDto) {
+    return this.authenticationService.register(createAuthenticationDto);
+  }
+
+  @Post('login')
+  login() {
+    return this.authenticationService.login();
   }
 
   @Get()

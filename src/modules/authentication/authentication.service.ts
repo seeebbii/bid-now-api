@@ -13,11 +13,15 @@ export class AuthenticationService {
     private authenticationRepository: AuthenticationRepository,
   ) { }
 
-  create(createAuthenticationDto: CreateAuthenticationDto) {
+  register(createAuthenticationDto: CreateAuthenticationDto) {
     return 'This action adds a new authentication';
   }
 
-  async findAll() {
+  login() {
+    return 'This action logs in a user';
+  }
+
+  findAll() {
     return `This action returns all authentication`;
   }
 
