@@ -30,7 +30,7 @@ async function bootstrap() {
     .setTitle('Typeorm API')
     .setDescription('')
     .setVersion('1.0')
-    .addTag(SwaggerTags.AUTH)
+    // .addTag(SwaggerTags.AUTH)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
