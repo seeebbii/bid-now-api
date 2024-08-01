@@ -19,12 +19,14 @@ export class Session {
     @Column({ type: 'timestamptz', nullable: true })
     last_access: Date;
 
+    @Column({ nullable: true, })
+    fcm_token: string;
+
     @CreateDateColumn({ type: 'timestamptz' })
     created_at: Date;
 
     @UpdateDateColumn({ type: 'timestamptz' })
     updated_at: Date;
-
 
     @ManyToOne(() => Authentication, Authentication => Authentication.sessions)
     @JoinColumn({ name: 'authentication_id' })
