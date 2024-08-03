@@ -1,10 +1,11 @@
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToOne } from "typeorm";
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class User {
 
-    @PrimaryGeneratedColumn({ type: 'bigint' })
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string = uuidv4();
 
     @Column()
     first_name: string;

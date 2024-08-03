@@ -1,11 +1,12 @@
 import { Authentication } from "src/modules/authentication/entities/authentication.entity";
 import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, ManyToOne } from "typeorm";
+import { v4 as uuidv4 } from 'uuid';
 
 @Entity()
 export class Session {
 
-    @PrimaryGeneratedColumn({ type: 'bigint' })
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string = uuidv4();
 
     @Column({ type: 'varchar', nullable: true })
     device_id: string;
@@ -16,7 +17,7 @@ export class Session {
     @Column({ type: 'varchar', nullable: true })
     user_agent: string;
 
-    @Column({ type: 'timestamptz', nullable: true })
+    @Column({ type: 'timestamptz', nullable: true, default: () => 'CURRENT_TIMESTAMP' })
     last_access: Date;
 
     @Column({ nullable: true, })
@@ -31,4 +32,5 @@ export class Session {
     @ManyToOne(() => Authentication, Authentication => Authentication.sessions)
     @JoinColumn({ name: 'authentication_id' })
     authentication: Authentication;
+    createdSession: import("d:/Development/NestJs Projects/bid-now-api/src/modules/authentication/dto/signup-authentication.dto").SignupAuthenticationDto;
 }

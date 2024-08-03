@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
-import { UpdateSessionDto } from './dto/update-session.dto';
+import { SessionRepository } from './repository/session.repository';
+import { createResponse } from 'src/common/interceptors/wrapper/api-transform.wrapper';
 
 @Injectable()
 export class SessionsService {
-  create(createSessionDto: CreateSessionDto) {
-    return 'This action adds a new session';
+  private readonly logger = new Logger(SessionsService.name);
+
+  constructor(
+    private sessionServiceRepository: SessionRepository
+  ) {
+
   }
 
-  findAll() {
-    return `This action returns all sessions`;
+  async createSession(createSessionDto: CreateSessionDto) {
+
+    try {
+      // ! Create a new session
+      const createdSession = await this.sessionServiceRepository.createSession(createSessionDto);
+
+      return createResponse({
+        success: true,
+        statusCode: HttpStatus.CREATED,
+        message: 'Session created successfully',
+        data: createdSession,
+      });
+
+    } catch (errors) {
+
+      this.logger.error(errors);
+      return createResponse({
+        success: false,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "An error occurred while creating the session",
+        errors: errors
+      });
+
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} session`;
-  }
-
-  update(id: number, updateSessionDto: UpdateSessionDto) {
-    return `This action updates a #${id} session`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} session`;
-  }
 }

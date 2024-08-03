@@ -3,13 +3,30 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { SwaggerTags } from './common/constants/swagger-tags.constant';
 import { ConfigService } from '@nestjs/config';
-import { Logger, VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, Logger, VersioningType } from '@nestjs/common';
+import { ValidationResponsePipe } from './common/pipes/validation-response.pipe';
+import { NotFoundExceptionFilter } from './common/filters/not-found-exception.filter';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
 
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule,);
+
+  // ! Global Prefix
   app.setGlobalPrefix('api');
+
+
+  // ! Global Pipes
+  app.useGlobalPipes(new ValidationResponsePipe());
+
+  // ! Global Filters
+  app.useGlobalFilters(new NotFoundExceptionFilter());
+
+  // ! Global Interceptors
+  app.useGlobalInterceptors(new TransformInterceptor());
+
+  // app.useGlobalPipes(new ValidationResponsePipePipe());
 
   // ! Versioning
   app.enableVersioning({

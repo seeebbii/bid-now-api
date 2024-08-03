@@ -9,7 +9,7 @@ export const dataSourceOptions = (configService: ConfigService): DataSourceOptio
     password: configService.get('DATABASE_PASSWORD'),
     database: configService.get('DATABASE_NAME'),
     migrationsTableName: configService.get('DATABASE_MIGRATIONS_TABLE_NAME'),
-    synchronize: false,
+    synchronize: true,
     entities: [__dirname + '/../../**/*.entity{.ts,.js}'],
     migrations: [__dirname + '/../../**/*.migration{.ts,.js}'],
 });

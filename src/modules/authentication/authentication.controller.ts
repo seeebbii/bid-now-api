@@ -1,11 +1,14 @@
 import { ConfigService } from '@nestjs/config';
-import { Controller, Get, Post, Body, Patch, Param, Delete, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Logger, Req, HttpException, HttpStatus, Ip } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { CreateAuthenticationDto } from './dto/create-authentication.dto';
 import { UpdateAuthenticationDto } from './dto/update-authentication.dto';
 import { SwaggerTags } from 'src/common/constants/swagger-tags.constant';
 import { ControllerTagsConstant } from 'src/common/constants/controller-tags.constant';
 import { ApiTags } from '@nestjs/swagger';
+import { SignupAuthenticationDto } from './dto/signup-authentication.dto';
+import { LoginAuthenticationDto } from './dto/login-authentication.dto';
+import { Request } from 'express';
+import { CreateSessionDto } from '../sessions/dto/create-session.dto';
 
 @ApiTags(SwaggerTags.AUTH)
 @Controller({
@@ -17,33 +20,44 @@ export class AuthenticationController {
 
   constructor(private readonly authenticationService: AuthenticationService, private readonly configService: ConfigService) { }
 
-  @Post()
-  register(@Body() createAuthenticationDto: CreateAuthenticationDto) {
-    return this.authenticationService.register(createAuthenticationDto);
+  @Post('signup')
+  async signup(
+    @Body() signupAuthenticationDto: SignupAuthenticationDto,
+    @Body() createSessionDto: CreateSessionDto,
+    @Req() request: Request,
+    @Ip() ip: string) {
+    // ! Get the agent and ip address from the request
+    const agent = request.headers['user-agent'];
+
+
+    createSessionDto.ip_address = ip;
+    createSessionDto.user_agent = agent
+
+    return await this.authenticationService.signup(signupAuthenticationDto, createSessionDto);
   }
 
+
+
   @Post('login')
-  login() {
-    return this.authenticationService.login();
+  async login(
+    @Body() loginAuthenticationDto: LoginAuthenticationDto,
+    @Req() request: Request,
+    @Ip() ip: string) {
+
+    // ! Get the agent and ip address from the request
+    const agent = request.headers['user-agent'];
+    // const ip = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
+
+    console.log(ip)
+
+    return loginAuthenticationDto;
   }
 
   @Get()
-  findAll() {
-    return this.authenticationService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authenticationService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthenticationDto: UpdateAuthenticationDto) {
-    return this.authenticationService.update(+id, updateAuthenticationDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authenticationService.remove(+id);
+  async testing() {
+    return {
+      message: 'Hello World',
+      status: HttpStatus.OK
+    }
   }
 }
