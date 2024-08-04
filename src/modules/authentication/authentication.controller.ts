@@ -20,6 +20,12 @@ export class AuthenticationController {
 
   constructor(private readonly authenticationService: AuthenticationService, private readonly configService: ConfigService) { }
 
+
+  @Get()
+  async findAll() {
+    return await this.authenticationService.findAll();
+  }
+
   @Post('signup')
   async signup(
     @Body() signupAuthenticationDto: SignupAuthenticationDto,
@@ -41,16 +47,17 @@ export class AuthenticationController {
   @Post('login')
   async login(
     @Body() loginAuthenticationDto: LoginAuthenticationDto,
+    @Body() createSessionDto: CreateSessionDto,
     @Req() request: Request,
     @Ip() ip: string) {
 
     // ! Get the agent and ip address from the request
     const agent = request.headers['user-agent'];
-    // const ip = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
 
-    console.log(ip)
+    createSessionDto.ip_address = ip;
+    createSessionDto.user_agent = agent
 
-    return loginAuthenticationDto;
+    return await this.authenticationService.login(loginAuthenticationDto, createSessionDto);
   }
 
   @Get()

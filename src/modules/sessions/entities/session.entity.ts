@@ -32,5 +32,4 @@ export class Session {
     @ManyToOne(() => Authentication, Authentication => Authentication.sessions)
     @JoinColumn({ name: 'authentication_id' })
     authentication: Authentication;
-    createdSession: import("d:/Development/NestJs Projects/bid-now-api/src/modules/authentication/dto/signup-authentication.dto").SignupAuthenticationDto;
 }

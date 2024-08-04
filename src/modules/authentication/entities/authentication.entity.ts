@@ -1,6 +1,6 @@
 import { Session } from "src/modules/sessions/entities/session.entity";
 import { User } from "src/modules/user/entities/user.entity";
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, BaseEntity } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany, BaseEntity, AfterLoad } from "typeorm";
 import { Role } from "../dto/signup-authentication.dto";
 import { Exclude } from "class-transformer";
 import { v4 as uuidv4 } from 'uuid';
@@ -15,7 +15,7 @@ export class Authentication extends BaseEntity {
     @Column()
     email: string;
 
-    @Column({ select: false })
+    @Column({ select: true })
     @Exclude({ toPlainOnly: true })
     password: string;
 
@@ -46,4 +46,16 @@ export class Authentication extends BaseEntity {
         super();
         Object.assign(this, partial);
     }
+
+    // ! Method to check if the user is an admin
+    isAdmin(): boolean {
+        return this.role === Role.ADMIN;
+    }
+
+
+    // ! Method to check if the user is a user
+    isUser(): boolean {
+        return this.role === Role.USER;
+    }
+
 }

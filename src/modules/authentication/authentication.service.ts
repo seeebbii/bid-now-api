@@ -10,6 +10,9 @@ import * as bcrypt from 'bcrypt';
 import { HttpStatus } from '@nestjs/common';
 import { createResponse } from 'src/common/interceptors/wrapper/api-transform.wrapper';
 import { SessionRepository } from '../sessions/repository/session.repository';
+import { LoginAuthenticationDto } from './dto/login-authentication.dto';
+import { instanceToPlain } from 'class-transformer';
+import { take } from 'rxjs';
 
 @Injectable()
 export class AuthenticationService {
@@ -19,6 +22,31 @@ export class AuthenticationService {
     private authenticationRepository: AuthenticationRepository,
     private sessionRepository: SessionRepository
   ) { }
+
+  async findAll(): Promise<any> {
+    try {
+      const users = await this.authenticationRepository.findAll();
+
+      return createResponse({
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Users retrieved successfully',
+        data: users,
+      });
+
+    } catch (error) {
+      this.logger.error(error);
+      return createResponse({
+        success: false,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'An error occurred while retrieving the users',
+        errors: error
+      });
+    }
+
+    return;
+  }
+
 
 
   async signup(
@@ -56,7 +84,7 @@ export class AuthenticationService {
       const hashedPassword = await this.authenticationRepository.hashPassword(signupAuthenticationDto.password, salt);
 
       signupAuthenticationDto.password = hashedPassword;
-      const createdUser = await this.authenticationRepository.signup(signupAuthenticationDto, createSessionDto);
+      const createdUser = await this.authenticationRepository.signup(signupAuthenticationDto);
 
       // ! Create a new session
       const createdSession = await this.sessionRepository.createSession(createSessionDto);
@@ -75,21 +103,80 @@ export class AuthenticationService {
         // data: userResponse,
       });
 
-    } catch (errors) {
+    } catch (error) {
 
-      this.logger.error(errors);
+      this.logger.error(error);
       return createResponse({
         success: false,
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: "An error occurred while creating the user",
-        errors: errors
+        errors: error
       });
 
     }
 
   }
 
+  async login(
+    loginAuthenticationDto: LoginAuthenticationDto,
+    createSessionDto: CreateSessionDto,
+  ): Promise<any> {
 
+    try {
+
+      const auth = await this.authenticationRepository.login(loginAuthenticationDto);
+
+      if (!auth) {
+        return createResponse({
+          success: false,
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Invalid email or password',
+        });
+      }
+
+      // ! Compare the password
+
+      const isPasswordValid = await this.authenticationRepository.comparePassword(loginAuthenticationDto.password, auth.password);
+      if (!isPasswordValid) {
+        return createResponse({
+          success: false,
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Invalid email or password',
+        });
+      }
+
+      // ! Create a new session
+      const createdSession = await this.sessionRepository.createSession(createSessionDto);
+
+      const savedSession = await this.sessionRepository.save(createdSession);
+
+      // Get the auth's sessions
+      // Fetch the last 3 sessions for the auth
+      const sessions = await this.sessionRepository.find({
+        where: { "authentication": auth },
+        order: { created_at: 'DESC' },
+        take: 3,
+      });
+
+      console.dir(sessions)
+
+      return createResponse({
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'User logged in successfully',
+        data: auth,
+      });
+
+    } catch (error) {
+      this.logger.error(error);
+      return createResponse({
+        success: false,
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'An error occurred while logging in',
+        errors: error
+      });
+    }
+  }
 
 
 }

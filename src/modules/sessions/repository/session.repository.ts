@@ -3,6 +3,7 @@ import { DataSource, Repository } from "typeorm";
 import { Session } from "../entities/session.entity";
 import { SessionBaseRepository } from "./session.base.repository";
 import { ConfigService } from '@nestjs/config';
+import { CreateSessionDto } from '../dto/create-session.dto';
 
 @Injectable()
 export class SessionRepository extends Repository<Session> implements SessionBaseRepository {
@@ -17,7 +18,7 @@ export class SessionRepository extends Repository<Session> implements SessionBas
     }
 
 
-    async createSession(createSessionDto: any): Promise<Session | null> {
+    async createSession(createSessionDto: CreateSessionDto): Promise<Session | null> {
         return await this.save(createSessionDto);
     }
 
