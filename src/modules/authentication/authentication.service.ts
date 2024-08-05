@@ -145,20 +145,12 @@ export class AuthenticationService {
         });
       }
 
-      // ! Create a new session
+      // Create a session against the user that just logged in
       const createdSession = await this.sessionRepository.createSession(createSessionDto);
+      createdSession.authentication = auth;
+      await this.sessionRepository.save(createdSession);
+      await this.authenticationRepository.save(auth);
 
-      const savedSession = await this.sessionRepository.save(createdSession);
-
-      // Get the auth's sessions
-      // Fetch the last 3 sessions for the auth
-      const sessions = await this.sessionRepository.find({
-        where: { "authentication": auth },
-        order: { created_at: 'DESC' },
-        take: 3,
-      });
-
-      console.dir(sessions)
 
       return createResponse({
         success: true,
