@@ -52,17 +52,15 @@ export class AuthenticationService {
   async signup(
     signupAuthenticationDto: SignupAuthenticationDto,
     createSessionDto: CreateSessionDto): Promise<any> {
+    // ! Create an array to hold errors
+    let errors = [];
 
     // ! Check if the user already exists
     const user = await this.authenticationRepository.findByEmail(signupAuthenticationDto.email);
 
     // ! If the user exists, return null
     if (user) {
-      return createResponse({
-        success: false,
-        statusCode: HttpStatus.CONFLICT,
-        message: 'User already exists',
-      });
+      errors.push({ email: ['Email is already in use'] });
     }
 
     // ! Check if the phone number already exists
@@ -70,10 +68,17 @@ export class AuthenticationService {
 
     // ! If the phone number exists, return null
     if (phoneNumber) {
+      errors.push({ phone_number: ['Phone number is already in use'] });
+    }
+
+    // If there are any errors, return the response
+    if (errors.length > 0) {
+      const formattedErrors = errors.reduce((acc, curr) => ({ ...acc, ...curr }), {});
       return createResponse({
         success: false,
         statusCode: HttpStatus.CONFLICT,
-        message: 'Phone number already exists',
+        message: 'Error creating user',
+        errors: formattedErrors,
       });
     }
 

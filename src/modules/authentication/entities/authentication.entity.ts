@@ -15,8 +15,8 @@ export class Authentication extends BaseEntity {
     @Column()
     email: string;
 
-    @Column({ select: true })
-    @Exclude({ toPlainOnly: true })
+    @Column({ type: "varchar" })
+    @Exclude({})
     password: string;
 
     @Column({ type: 'enum', enum: [Role.ADMIN, Role.USER], default: Role.ADMIN })
